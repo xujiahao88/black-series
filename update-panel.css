@@ -1,0 +1,96 @@
+/* ============================================================
+ * 数据更新面板（公开版专用）
+ * ============================================================ */
+
+.update-btn {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid #c3dcea;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all .12s;
+}
+.update-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.modal-mask {
+  position: fixed; inset: 0;
+  background: rgba(20, 28, 36, .45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; padding: 24px;
+}
+.modal {
+  background: var(--card);
+  border-radius: var(--radius);
+  width: 100%; max-width: 720px;
+  max-height: 88vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 12px 40px rgba(20, 30, 40, .22);
+}
+.modal-head {
+  display: flex; align-items: center;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 15px; font-weight: 700; }
+.modal-close {
+  margin-left: auto; cursor: pointer;
+  color: var(--text-3); font-size: 16px; line-height: 1;
+  padding: 2px 6px; border-radius: 3px;
+}
+.modal-close:hover { background: var(--neutral-bg); color: var(--text); }
+
+.modal-body { padding: 18px 22px; overflow-y: auto; flex: 1; }
+.modal-tip {
+  font-size: 12.5px; color: var(--text-2); line-height: 1.8;
+  background: var(--accent-soft); border: 1px solid #cfe2ee;
+  border-radius: var(--radius-sm); padding: 11px 14px; margin-bottom: 14px;
+}
+.modal-tip b { color: #123a4e; }
+.modal-text {
+  width: 100%; height: 260px;
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12px; line-height: 1.6;
+  color: var(--text);
+  background: var(--card-alt);
+  border: 1px solid var(--border-hard);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px; resize: vertical;
+}
+.modal-text:focus { outline: none; border-color: var(--accent-line); }
+.modal-msg { font-size: 12.5px; margin-top: 10px; min-height: 18px; }
+.modal-msg.ok  { color: var(--down); font-weight: 600; }
+.modal-msg.err { color: var(--up);   font-weight: 600; }
+
+.modal-foot {
+  display: flex; gap: 8px; align-items: center;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--card-alt);
+  border-radius: 0 0 var(--radius) var(--radius);
+  flex-wrap: wrap;
+}
+.mbtn {
+  padding: 7px 16px;
+  font-size: 13px; font-family: inherit;
+  background: var(--card);
+  color: var(--text-2);
+  border: 1px solid var(--border-hard);
+  border-radius: var(--radius-sm);
+  cursor: pointer; transition: all .12s;
+}
+.mbtn:hover { border-color: var(--accent-line); color: var(--accent); }
+.mbtn.primary {
+  background: var(--accent); color: #fff;
+  border-color: var(--accent); font-weight: 600;
+}
+.mbtn.primary:hover { background: #17455e; color: #fff; }
+
+@media (max-width: 640px) {
+  .modal-mask { padding: 12px; }
+  .modal-text { height: 200px; }
+}
