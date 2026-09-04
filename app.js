@@ -24,8 +24,13 @@
     { id: "demand",    name: "需求端",     index: "03" },
     { id: "inventory", name: "库存",       index: "04" },
     { id: "profit",    name: "利润与成本", index: "05" },
-    { id: "facts",     name: "已核实消息", index: "06" }
+    { id: "facts",     name: "已核实消息", index: "06" },
+    { id: "seasonal",  name: "季节性图谱", index: "07" }
   ];
+
+  /* 季节性数据（seasonal.js 提供，缺失时该模块自动隐藏） */
+  const SEASONAL = (window.SEASONAL_DATA && typeof window.SEASONAL_DATA === "object")
+    ? window.SEASONAL_DATA : {};
 
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s == null ? "" : s);
@@ -244,7 +249,10 @@
     const t = tone(p.chg);
     const R = RANGES[p.id] || null;
 
+    const se = SEASONAL[p.id] || null;
+
     const chips = SECTIONS
+      .filter((s) => s.id !== "seasonal" || se)
       .map((s) => `<div class="chip" data-scroll="${s.id}">${esc(s.name)}</div>`).join("");
 
     /* 五维数据块 */
@@ -314,9 +322,159 @@
         ${factsHtml}
       </div>
 
+      ${se ? seasonalSection(se) : ""}
+
       <div class="disclaimer">${esc(D.meta.disclaimer)}</div>`;
 
     bindChips();
+  }
+
+  /* ============================================================
+   * 季节性图谱（原生 SVG，无外部依赖）
+   * ============================================================ */
+  const YEAR_STYLE = [
+    { year: "2024", color: "#c2ccd6", width: 1.2, dash: "5 4" },
+    { year: "2025", color: "#7aa7c7", width: 1.4, dash: "5 4" },
+    { year: "2026", color: "#1f5673", width: 2.1, dash: "" }
+  ];
+
+  function fmtNum(v) {
+    if (v === null || v === undefined || isNaN(v)) return "—";
+    const a = Math.abs(v);
+    if (a >= 1000) return v.toLocaleString("zh-CN", { maximumFractionDigits: 0 });
+    if (a >= 100) return v.toFixed(1);
+    return v.toFixed(2);
+  }
+
+  function signedNum(v, unit) {
+    if (v === null || v === undefined || isNaN(v)) return "—";
+    const s = v > 0 ? "+" : "";
+    return s + fmtNum(v) + (unit ? "" : "");
+  }
+
+  function seasonalChart(ch, axis) {
+    const W = 900, H = 208, PADL = 62, PADR = 18, PADT = 18, PADB = 28;
+    const n = axis.length;
+    const x = (i) => PADL + (i / (n - 1)) * (W - PADL - PADR);
+
+    let min = Infinity, max = -Infinity;
+    ch.series.forEach((s) => s.data.forEach((v) => {
+      if (v !== null && !isNaN(v)) { if (v < min) min = v; if (v > max) max = v; }
+    }));
+    if (!isFinite(min) || !isFinite(max)) return "";
+    if (min === max) { min -= 1; max += 1; }
+    const gap = (max - min) * 0.08;
+    min -= gap; max += gap;
+    const y = (v) => PADT + (1 - (v - min) / (max - min)) * (H - PADT - PADB);
+
+    /* 网格与 Y 轴刻度 */
+    let grid = "", yTicks = "";
+    for (let g = 0; g <= 4; g++) {
+      const v = min + ((max - min) * g) / 4;
+      const yy = y(v);
+      grid += `<line x1="${PADL}" y1="${yy}" x2="${W - PADR}" y2="${yy}"
+                 stroke="#eceff2" stroke-width="1"/>`;
+      yTicks += `<text x="${PADL - 8}" y="${yy + 4}" fill="#7b8794" font-size="10.5"
+                   text-anchor="end" font-family="sans-serif">${fmtNum(v)}</text>`;
+    }
+
+    /* X 轴月份刻度 */
+    let xTicks = "";
+    let lastM = "";
+    for (let i = 0; i < n; i++) {
+      const m = String(axis[i]).slice(0, 2);
+      if (m !== lastM) {
+        lastM = m;
+        const xx = x(i);
+        xTicks += `<text x="${xx}" y="${H - 8}" fill="#7b8794" font-size="10.5"
+                     text-anchor="middle" font-family="sans-serif">${Number(m)}月</text>`;
+      }
+    }
+
+    /* 曲线：遇到 null 断开 */
+    let paths = "";
+    ch.series.forEach((s) => {
+      const st = YEAR_STYLE.find((k) => k.year === s.year) ||
+        { color: "#9aa7b4", width: 1.2, dash: "4 3" };
+      /* 注意：周度数据在日度轴上是稀疏的（相邻点之间隔着 null）。
+         这里跨过 null 直接连线（相当于源站的「连断点」），
+         若遇到 null 就断开，整条线会退化成互不相连的孤立点。 */
+      let d = "", pen = false;
+      for (let i = 0; i < s.data.length; i++) {
+        const v = s.data[i];
+        if (v === null || isNaN(v)) continue;
+        d += (pen ? " L " : " M ") + x(i).toFixed(1) + " " + y(v).toFixed(1);
+        pen = true;
+      }
+      if (!d) return;
+      paths += `<path d="${d.trim()}" fill="none" stroke="${st.color}"
+                  stroke-width="${st.width}" stroke-linejoin="round" stroke-linecap="round"
+                  ${st.dash ? 'stroke-dasharray="' + st.dash + '"' : ""}/>`;
+    });
+
+    /* 最新值摘要 */
+    const items = [];
+    items.push(`<span class="se-kv"><b>本期</b>${fmtNum(ch.cur)} ${esc(ch.unit)}</span>`);
+    if (ch.prev !== null && ch.prev !== undefined) {
+      items.push(`<span class="se-kv"><b>上期</b>${fmtNum(ch.prev)}</span>`);
+    }
+    if (ch.mom !== null && ch.mom !== undefined) {
+      const cls = ch.mom > 0 ? "up" : (ch.mom < 0 ? "down" : "neutral");
+      items.push(`<span class="se-kv"><b>环比</b><span class="${cls}">${signedNum(ch.mom)}</span></span>`);
+    }
+    if (ch.yoy !== null && ch.yoy !== undefined) {
+      const cls = ch.yoy > 0 ? "up" : (ch.yoy < 0 ? "down" : "neutral");
+      items.push(`<span class="se-kv"><b>同比</b><span class="${cls}">${signedNum(ch.yoy)}</span></span>`);
+    }
+    if (ch.cumPct !== null && ch.cumPct !== undefined) {
+      const cls = ch.cumPct > 0 ? "up" : (ch.cumPct < 0 ? "down" : "neutral");
+      items.push(`<span class="se-kv"><b>累计同比</b><span class="${cls}">${signedNum(ch.cumPct)}%</span></span>`);
+    }
+
+    const legend = YEAR_STYLE.map((k) =>
+      `<span class="se-lg"><i style="background:${k.color}"></i>${k.year}</span>`).join("");
+
+    return `
+      <div class="se-chart">
+        <div class="se-head">
+          <div class="se-title">${esc(ch.title)}</div>
+          <div class="se-meta">截至 ${esc(ch.asOf)} · ${esc(ch.source)}</div>
+        </div>
+        <div class="se-vals">${items.join("")}</div>
+        <div class="se-legend">${legend}</div>
+        <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}"
+             preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          ${grid}${yTicks}${xTicks}${paths}
+        </svg>
+      </div>`;
+  }
+
+  function seasonalSection(se) {
+    if (!se || !se.charts || !se.charts.length) return "";
+    const charts = se.charts.map((c) => seasonalChart(c, se.axis)).join("");
+    const src = (SEASONAL.meta && SEASONAL.meta.sources) || [];
+    const srcHtml = src.map((s) =>
+      `<li>${esc(s.name)}（数据日期 ${esc(s.asOf)}）</li>`).join("");
+
+    return `
+      <div class="card section-anchor" id="s-seasonal">
+        <div class="card-head"><div class="card-title">季节性图谱</div>
+          <span class="card-index">07</span>
+          <span class="badge accent" style="margin-left:auto">${se.charts.length} 张图</span>
+        </div>
+        <div class="note-line">
+          ${esc((SEASONAL.meta && SEASONAL.meta.note) || "")}
+          深蓝实线为 2026 年，浅色虚线为 2024／2025 年同期。数据缺失处曲线断开。
+        </div>
+        <div class="se-grid">${charts}</div>
+        <div class="se-src">
+          <div class="se-src-t">数据来源</div>
+          <ul>${srcHtml}</ul>
+          <div class="note-line" style="margin-top:6px">
+            季节性数据由站点自动抓取整理，更新频率与源站一致；品种持仓与交易决策请以交易所及资讯商实时数据为准。
+          </div>
+        </div>
+      </div>`;
   }
 
   /* ---------- 价格定位条 ---------- */
