@@ -10,7 +10,7 @@
 
   /* 价格区间（用于定位条）。价格区间变动时同步调整。 */
   const RANGES = {
-    iron:  { low: 690,  high: 745,  costLine: null, costLabel: "" },
+    iron:  { low: 700,  high: 775,  costLine: null, costLabel: "" },
     coke:  { low: 1550, high: 1790, costLine: null, costLabel: "" },
     steel: { low: 3050, high: 3280, costLine: 3312, costLabel: "电弧炉成本 3312" },
     glass: { low: 900,  high: 1020, costLine: null, costLabel: "" },
