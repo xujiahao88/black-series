@@ -31,8 +31,9 @@
 
   /* 外部数据源链接：从工作台一键跳转至原始站点（不抓取、不内嵌数据） */
   const SOURCE_LINKS = {
-    iron: { name: "铁矿周度图表 · iron-ore-charts", url: "https://iron-ore-charts.pages.dev/" },
-    coke: { name: "双焦周度图表（汾渭）· fenwei",   url: "https://fenwei.pages.dev/" }
+    iron:  { name: "铁矿周度图表 · iron-ore-charts", url: "https://iron-ore-charts.pages.dev/" },
+    coke:  { name: "双焦周度图表（汾渭）· fenwei",   url: "https://fenwei.pages.dev/" },
+    steel: { name: "钢材直供与出库日度跟踪", url: "https://0e8b2d5bad9e47c3b40eb73eb7331a62.sh1.agentos-app.net/" }
   };
 
   const $ = (id) => document.getElementById(id);
@@ -344,7 +345,7 @@
       <div class="card section-anchor" id="s-source">
         <div class="card-head"><div class="card-title">外部数据源</div>
           <span class="card-index">08</span></div>
-        <div class="note-line">本品种的原始周度数据来源，点击在新标签页打开。</div>
+        <div class="note-line">本品种的原始数据来源，点击在新标签页打开。</div>
         <a class="src-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)} ↗</a>
       </div>`;
   }
