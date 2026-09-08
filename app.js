@@ -31,9 +31,12 @@
 
   /* 外部数据源链接：从工作台一键跳转至原始站点（不抓取、不内嵌数据） */
   const SOURCE_LINKS = {
-    iron:  { name: "铁矿周度图表 · iron-ore-charts", url: "https://iron-ore-charts.pages.dev/" },
-    coke:  { name: "双焦周度图表（汾渭）· fenwei",   url: "https://fenwei.pages.dev/" },
-    steel: { name: "钢材直供与出库日度跟踪", url: "https://0e8b2d5bad9e47c3b40eb73eb7331a62.sh1.agentos-app.net/" }
+    iron: [{ name: "铁矿周度图表 · iron-ore-charts", url: "https://iron-ore-charts.pages.dev/" }],
+    coke: [{ name: "双焦周度图表（汾渭）· fenwei",   url: "https://fenwei.pages.dev/" }],
+    steel: [
+      { name: "钢材直供与出库日度跟踪", url: "https://0e8b2d5bad9e47c3b40eb73eb7331a62.sh1.agentos-app.net/" },
+      { name: "卷螺大样本 · 季节性图谱", url: "https://xujiahao88.github.io/juanluo-charts/" }
+    ]
   };
 
   const $ = (id) => document.getElementById(id);
@@ -94,8 +97,9 @@
       <div class="nav-group">
         <div class="nav-group-title">外部数据源</div>`;
     Object.keys(SOURCE_LINKS).forEach((k) => {
-      const l = SOURCE_LINKS[k];
-      html += `<a class="nav-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)} ↗</a>`;
+      (SOURCE_LINKS[k] || []).forEach((l) => {
+        html += `<a class="nav-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)} ↗</a>`;
+      });
     });
     html += `</div>
       <div style="padding:0 20px;margin-top:14px">
@@ -339,14 +343,17 @@
 
   /* 外部数据源链接卡片（品种页底部，对应品种有 SOURCE_LINKS 时显示） */
   function srcLinkCard(p) {
-    const l = SOURCE_LINKS[p.id];
-    if (!l) return "";
+    const list = SOURCE_LINKS[p.id];
+    if (!list || !list.length) return "";
+    const links = list.map((l) =>
+      `<a class="src-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)} ↗</a>`
+    ).join("");
     return `
       <div class="card section-anchor" id="s-source">
         <div class="card-head"><div class="card-title">外部数据源</div>
           <span class="card-index">08</span></div>
         <div class="note-line">本品种的原始数据来源，点击在新标签页打开。</div>
-        <a class="src-link" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)} ↗</a>
+        ${links}
       </div>`;
   }
   /* ============================================================
