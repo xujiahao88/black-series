@@ -15,8 +15,8 @@
     steel: { low: 3050, high: 3280, costLine: 3312, costLabel: "电弧炉成本 3312" },
     glass: { low: 900,  high: 1020, costLine: null, costLabel: "" },
     soda:  { low: 880,  high: 1120, costLine: 880,  costLabel: "天然碱完全成本 880" },
-    smn:   { low: 5800, high: 6900, costLine: 6100, costLabel: "内蒙现金成本约6100" },
-    sfe:   { low: 6200, high: 7300, costLine: 6450, costLabel: "青海现金成本约6450" }
+    smn:   { low: 5600, high: 6900, costLine: 6100, costLabel: "内蒙现金成本约6100" },
+    sfe:   { low: 6000, high: 7300, costLine: 6450, costLabel: "青海现金成本约6450" }
   };
 
   /* 品种页模块 */
