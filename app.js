@@ -10,13 +10,13 @@
 
   /* 价格区间（用于定位条）。价格区间变动时同步调整。 */
   const RANGES = {
-    iron:  { low: 700,  high: 775,  costLine: null, costLabel: "" },
-    coke:  { low: 1550, high: 1790, costLine: null, costLabel: "" },
-    steel: { low: 3050, high: 3280, costLine: 3312, costLabel: "电弧炉成本 3312" },
-    glass: { low: 900,  high: 1020, costLine: null, costLabel: "" },
+    iron:  { low: 680,  high: 760,  costLine: 690,  costLabel: "海运费成本底 690" },
+    coke:  { low: 1420, high: 1680, costLine: null, costLabel: "" },
+    steel: { low: 2980, high: 3320, costLine: 3312, costLabel: "电弧炉成本 3312" },
+    glass: { low: 870,  high: 1010, costLine: null, costLabel: "" },
     soda:  { low: 880,  high: 1120, costLine: 880,  costLabel: "天然碱完全成本 880" },
-    smn:   { low: 5600, high: 6900, costLine: 6100, costLabel: "内蒙现金成本约6100" },
-    sfe:   { low: 6000, high: 7300, costLine: 6450, costLabel: "青海现金成本约6450" }
+    smn:   { low: 5550, high: 6600, costLine: 5700, costLabel: "内蒙现金成本约5700" },
+    sfe:   { low: 5700, high: 6700, costLine: 6000, costLabel: "现金成本约6000" }
   };
 
   /* 品种页模块 */
