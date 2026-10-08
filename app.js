@@ -36,6 +36,10 @@
     steel: [
       { name: "钢材直供与出库日度跟踪", url: "https://0e8b2d5bad9e47c3b40eb73eb7331a62.sh1.agentos-app.net/" },
       { name: "卷螺大样本 · 季节性图谱", url: "https://xujiahao88.github.io/juanluo-charts/" }
+    ],
+    /* 独立外部数据源：不绑定任何品种页，仅在左侧边栏展示 */
+    standalone: [
+      { name: "动力煤周度图表 · thermal-coal", url: "https://xujiahao88.github.io/thermal-coal/" }
     ]
   };
 
