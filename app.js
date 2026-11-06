@@ -39,7 +39,8 @@
     /* 独立外部数据源：不绑定任何品种页，仅在左侧边栏展示 */
     standalone: [
       { name: "动力煤周度图表 · thermal-coal", url: "https://xujiahao88.github.io/thermal-coal/" },
-      { name: "微信来件摘要 · wechat-file-digest", url: "https://wechat-file-digest.app.workbuddy.host/?sharecode=UTWGDE6BUP" }
+      { name: "微信来件摘要 · wechat-file-digest", url: "https://wechat-file-digest.app.workbuddy.host/?sharecode=UTWGDE6BUP" },
+      { name: "墨菲技术分析平台 · 9品种18合约", url: "https://xuantie-murphy-futures.app.workbuddy.host/?sharecode=6E37F32OCI" }
     ]
   };
 
